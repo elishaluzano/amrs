@@ -5,20 +5,24 @@ public class PC{
 	public static void main(String []args){
 		int linecount=0;
 		ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+		ArrayList<String> possibleOperations = new ArrayList<String>();
+		possibleOperations.add("add");
+		possibleOperations.add("sub");
+		possibleOperations.add("load");
+		possibleOperations.add("cmp");
 		String currentLine;
+		final registerPattern = new Pattern("r[0-32]");
+	
 
 		try{
 			BufferedReader br = new BufferedReader(new FileReader("input.txt"));
 			while((currentLine = br.readLine())!=null){
-				
 				linecount++;
-				// // currentLine = currentLine.trim();
-				// // currentLine = currentLine.replace("\n", "");
-				// String[] line = currentLine.split("\n");
+				currentLine = currentLine.trim();
+				currentLine = currentLine.toLower();
+				currentLine = currentLine.replace("\n", "");
+				if(currentLine.equals("")) continue;
 				String[] temp = currentLine.split("");
-				System.out.println("currentLine: "+currentLine);
-				System.out.println("temp: "+temp.length);
-				if(temp.length == 0) continue;
 				String acc = "";
 				ArrayList<String> arr = new ArrayList<String>();
 
@@ -34,15 +38,12 @@ public class PC{
 				System.out.println();
 				if(arr.size()==3){
 					Instruction instr = new Instruction(arr.get(0),arr.get(1), arr.get(2));
+					instructions.add(instr);
 				}else{
 					System.out.println("Error");
 				}
 			}
 
-
-			for(Instruction i : instructions){
-				i.printShit();
-			}
 		}catch(Exception e){
 
 		}
