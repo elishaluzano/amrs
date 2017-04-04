@@ -2,8 +2,14 @@ load r1, 5
 add r3, r4
 sub r6, r7
 
+sub r8, r9
+sub r10, r11
+sub r12, r13
 
+sub r34, 11
+add r4, A
+load A, 4
 
-
+cmp 1, 2
 
 cmp r3, 4

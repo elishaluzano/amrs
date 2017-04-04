@@ -1,25 +1,19 @@
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class PC{
 	public static void main(String []args){
 		int linecount=0;
-		ArrayList<Instruction> instructions = new ArrayList<Instruction>();
-		ArrayList<String> possibleOperations = new ArrayList<String>();
-		possibleOperations.add("add");
-		possibleOperations.add("sub");
-		possibleOperations.add("load");
-		possibleOperations.add("cmp");
 		String currentLine;
-		final registerPattern = new Pattern("r[0-32]");
-	
+		Verifier verifier = new Verifier();
+		ArrayList<Instruction> instructions = new ArrayList<Instruction>();
 
 		try{
 			BufferedReader br = new BufferedReader(new FileReader("input.txt"));
 			while((currentLine = br.readLine())!=null){
 				linecount++;
 				currentLine = currentLine.trim();
-				currentLine = currentLine.toLower();
+				currentLine = currentLine.toLowerCase();
 				currentLine = currentLine.replace("\n", "");
 				if(currentLine.equals("")) continue;
 				String[] temp = currentLine.split("");
@@ -35,10 +29,13 @@ public class PC{
 					}
 				}
 				if(!acc.equals("")) arr.add(acc);
-				System.out.println();
 				if(arr.size()==3){
 					Instruction instr = new Instruction(arr.get(0),arr.get(1), arr.get(2));
-					instructions.add(instr);
+					if(verifier.checkValidity(instr)) instructions.add(instr);
+					else{
+						System.out.print(arr.toString());
+						System.out.println(" is an invalid instruction set!");
+					}
 				}else{
 					System.out.println("Error");
 				}
@@ -47,7 +44,5 @@ public class PC{
 		}catch(Exception e){
 
 		}
-	}	
-
-
+	}
 }
