@@ -12,9 +12,8 @@ public class PC{
 			BufferedReader br = new BufferedReader(new FileReader("input.txt"));
 			while((currentLine = br.readLine())!=null){
 				linecount++;
-				currentLine = currentLine.trim();
+				currentLine = currentLine.replaceAll("\\s"," ");
 				currentLine = currentLine.toLowerCase();
-				currentLine = currentLine.replace("\n", "");
 				if(currentLine.equals("")) continue;
 				String[] temp = currentLine.split("");
 				String acc = "";
@@ -39,6 +38,10 @@ public class PC{
 				}else{
 					System.out.println("Error");
 				}
+			}
+
+			for(Instruction i : instructions){
+				i.printShit();
 			}
 
 		}catch(Exception e){
