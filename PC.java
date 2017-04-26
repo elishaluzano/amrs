@@ -4,8 +4,13 @@ import java.util.*;
 public class PC{
 
 	public static void main(String []args){
-		
+
 		HashMap<String,Integer> registers = new HashMap<String,Integer>();
+		HashMap<String,Integer> flags = new HashMap<String,Integer>();
+
+		flags.put("ZF", 0);
+		flags.put("NF", 0);
+
 		registers.put("r1",0);
 		registers.put("r2",0);
 		registers.put("r3",0);
@@ -57,7 +62,7 @@ public class PC{
 
 				for(int i=0; i<temp.length; i++){
 					if(!temp[i].equals(" ") && !temp[i].equals(",")){
-						acc += temp[i];	
+						acc += temp[i];
 					}else if(!acc.equals("")){
 						arr.add(acc);
 						acc = "";
@@ -66,15 +71,22 @@ public class PC{
 				if(!acc.equals("")) arr.add(acc);
 				if(arr.size()==3){
 					Instruction instr = new Instruction(arr.get(0),arr.get(1), arr.get(2));
-					if(verifier.checkValidity(instr)) 
+					if(verifier.checkValidity(instr))
 					{
 						instructions.add(instr);
 						instr.fetch(registers);
 						if(instr.getOperation().equals("add")){
 							instr.add(registers);
 						}
+						else if(instr.getOperation().equals("sub")) {
+							instr.sub(registers);
+						}
 						else if(instr.getOperation().equals("load")){
 							instr.load(registers);
+						}
+						else if(instr.getOperation().equals("cmp")){
+							instr.cmp(registers, flags);
+							System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF"));
 						}
 					}
 					else{

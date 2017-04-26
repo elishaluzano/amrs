@@ -1,9 +1,13 @@
 load r1, 5
+load r3, 3
+load r4, 4
 add r3, r4
-sub r6, r7
+sub r3, r1
 
 
 
 
 
 cmp r3, 4
+cmp r5, r3 
+cmp r1, 5
