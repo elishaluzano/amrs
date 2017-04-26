@@ -121,6 +121,22 @@ public class Instruction{
 		}
 	}
 
+	public void execute(HashMap<String, Integer> registers, HashMap<String, Integer> flags){
+		if(this.operation.equals("add")){
+			this.add(registers);
+		}
+		else if(this.operation.equals("sub")) {
+			this.sub(registers);
+		}
+		else if(this.operation.equals("load")){
+			this.load(registers);
+		}
+		else if(this.operation.equals("cmp")){
+			this.cmp(registers, flags);
+			System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF"));
+		}
+	}
+
 	private void printStatus() {
 		//System.out.println(this.op1+" "+this.op2);
 		System.out.println("\n" + this.operation + " " + this.op1 + " " + this.op2);

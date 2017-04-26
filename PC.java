@@ -14,7 +14,6 @@ public class PC{
 
 		//Initialization of Registers
 		for(int i=1; i<33; i++){
-			System.out.println("r"+Integer.toString(i));
 			registers.put("r"+Integer.toString(i), 0);
 		}
 
@@ -50,19 +49,7 @@ public class PC{
 					{
 						instructions.add(instr);
 						instr.fetch(registers);
-						if(instr.getOperation().equals("add")){
-							instr.add(registers);
-						}
-						else if(instr.getOperation().equals("sub")) {
-							instr.sub(registers);
-						}
-						else if(instr.getOperation().equals("load")){
-							instr.load(registers);
-						}
-						else if(instr.getOperation().equals("cmp")){
-							instr.cmp(registers, flags);
-							System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF"));
-						}
+						instr.execute(registers, flags);
 					}
 					else{
 						System.out.print(arr.toString());
