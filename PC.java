@@ -70,16 +70,24 @@ public class PC{
 					{
 						instructions.add(instr);
 						instr.fetch(registers);
+						if(instr.getOperation().equals("add")){
+							instr.add(registers);
+						}
+						else if(instr.getOperation().equals("load")){
+							instr.load(registers);
+						}
 					}
 					else{
 						System.out.print(arr.toString());
 						System.out.println(" is an invalid instruction set!");
 					}
 				}else{
-					System.out.println("Error");
+					System.out.print(arr.toString());
+					System.out.println(" is an invalid instruction set!");
 				}
 			}
 
+			System.out.println("\n\nCode:");
 			for(Instruction i : instructions){
 				i.printShit();
 			}

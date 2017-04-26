@@ -40,6 +40,35 @@ public class Instruction{
 		return this.val2;
 	}
 
+	public void load(HashMap<String,Integer> registers) {
+		if (isRegister(this.op2))
+		{
+			this.val2 = registers.get(this.op2);
+			this.val1 = this.val2;
+			registers.put(this.op1, this.val1);
+		}
+		else
+		{	
+			this.val1 = this.val2;
+			registers.put(this.op1, this.val1);
+		}
+		this.printStatus();
+	}
+
+	public void add(HashMap<String,Integer> registers) {
+		if (isRegister(this.op2))
+		{
+			this.val1 = this.val1 + registers.get(this.op2);
+			registers.put(this.op1, this.val1);
+		}
+		else
+		{
+			this.val1 = this.val1 + this.val2;
+			registers.put(this.op1, this.val1);
+		}
+		this.printStatus();
+	}
+
 	public void fetch(HashMap<String,Integer> registers)
 	{
 		if (isRegister(this.op1))
@@ -59,9 +88,12 @@ public class Instruction{
 		{
 			this.val2 = Integer.parseInt(this.op2);
 		}
+	}
 
-		System.out.println(this.op1+" "+this.op2);
-		System.out.println("Val 1: " + this.val1 + " Val 2: " + this.val2);
+	private void printStatus() {
+		//System.out.println(this.op1+" "+this.op2);
+		System.out.println("\n" + this.operation + " " + this.op1 + " " + this.op2);
+		System.out.println("\t" + this.op1 + ": " + this.val1 + " | " + this.op2 + ": " + this.val2);
 	}
 
 	private boolean isRegister(String operand)
