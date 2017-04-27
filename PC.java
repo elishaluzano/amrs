@@ -61,7 +61,7 @@ public class PC{
 				}
 			}
 
-			System.out.println("\n\nCode:");
+			System.out.println("\n\n-----Code-----");
 			for(Instruction i : instructions){
 				i.printShit();
 			}

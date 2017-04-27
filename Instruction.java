@@ -17,7 +17,7 @@ public class Instruction{
 	}
 
 	public void printShit(){
-		System.out.println(this.operation+" "+this.op1+" "+this.op2);
+		System.out.println("operation: " + this.operation + "\n" + "op1: " + this.op1 + "\n" + "op2: " + this.op2 + "\n");
 	}
 
 	public String getOperation(){
@@ -40,7 +40,7 @@ public class Instruction{
 		return this.val2;
 	}
 
-	public void load(HashMap<String,Integer> registers) {
+	public void load(HashMap<String,Integer> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
 		{
 			this.val2 = registers.get(this.op2);
@@ -52,10 +52,10 @@ public class Instruction{
 			this.val1 = this.val2;
 			registers.put(this.op1, this.val1);
 		}
-		this.printStatus();
+		this.printStatus(flags);
 	}
 
-	public void add(HashMap<String,Integer> registers) {
+	public void add(HashMap<String,Integer> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
 		{
 			this.val1 = this.val1 + registers.get(this.op2);
@@ -66,10 +66,10 @@ public class Instruction{
 			this.val1 = this.val1 + this.val2;
 			registers.put(this.op1, this.val1);
 		}
-		this.printStatus();
+		this.printStatus(flags);
 	}
 
-	public void sub(HashMap<String,Integer> registers) {
+	public void sub(HashMap<String,Integer> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
 		{
 			this.val1 = this.val1 - registers.get(this.op2);
@@ -80,7 +80,7 @@ public class Instruction{
 			this.val1 = this.val1 - this.val2;
 			registers.put(this.op1, this.val1);
 		}
-		this.printStatus();
+		this.printStatus(flags);
 	}
 
 	public void cmp(HashMap<String,Integer> registers, HashMap<String,Integer> flags) {
@@ -97,7 +97,7 @@ public class Instruction{
 		else if (diff < 0) flags.put("NF", 1);
 		// System.out.println("diff is: " + diff);
 		System.out.println();
-		this.printShit();
+		this.printStatus(flags);
 	}
 
 	public void fetch(HashMap<String,Integer> registers)
@@ -123,24 +123,25 @@ public class Instruction{
 
 	public void execute(HashMap<String, Integer> registers, HashMap<String, Integer> flags){
 		if(this.operation.equals("add")){
-			this.add(registers);
+			this.add(registers, flags);
 		}
 		else if(this.operation.equals("sub")) {
-			this.sub(registers);
+			this.sub(registers, flags);
 		}
 		else if(this.operation.equals("load")){
-			this.load(registers);
+			this.load(registers, flags);
 		}
 		else if(this.operation.equals("cmp")){
 			this.cmp(registers, flags);
-			System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF"));
 		}
 	}
 
-	private void printStatus() {
+	private void printStatus(HashMap<String, Integer> flags) {
 		//System.out.println(this.op1+" "+this.op2);
 		System.out.println("\n" + this.operation + " " + this.op1 + " " + this.op2);
-		System.out.println("\t" + this.op1 + ": " + this.val1 + " | " + this.op2 + ": " + this.val2);
+		System.out.println(this.op1 + ": " + this.val1 + "\n" + this.op2 + ": " + this.val2);
+		System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF"));
+
 	}
 
 	private boolean isRegister(String operand)
