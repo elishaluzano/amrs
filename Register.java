@@ -29,5 +29,5 @@ public class Register{
             this.busy = busy;
       }
 
-      
+      System.out.println();
 }
