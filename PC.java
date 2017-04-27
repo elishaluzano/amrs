@@ -4,40 +4,19 @@ import java.util.*;
 public class PC{
 
 	public static void main(String []args){
-		
+
 		HashMap<String,Integer> registers = new HashMap<String,Integer>();
-		registers.put("r1",0);
-		registers.put("r2",0);
-		registers.put("r3",0);
-		registers.put("r4",0);
-		registers.put("r5",0);
-		registers.put("r6",0);
-		registers.put("r7",0);
-		registers.put("r8",0);
-		registers.put("r9",0);
-		registers.put("r10",0);
-		registers.put("r11",0);
-		registers.put("r12",0);
-		registers.put("r13",0);
-		registers.put("r14",0);
-		registers.put("r15",0);
-		registers.put("r16",0);
-		registers.put("r17",0);
-		registers.put("r18",0);
-		registers.put("r19",0);
-		registers.put("r20",0);
-		registers.put("r21",0);
-		registers.put("r22",0);
-		registers.put("r23",0);
-		registers.put("r24",0);
-		registers.put("r25",0);
-		registers.put("r26",0);
-		registers.put("r27",0);
-		registers.put("r28",0);
-		registers.put("r29",0);
-		registers.put("r30",0);
-		registers.put("r31",0);
-		registers.put("r32",0);
+		HashMap<String,Integer> flags = new HashMap<String,Integer>();
+
+		//Initialization of flags
+		flags.put("ZF", 0);
+		flags.put("NF", 0);
+
+		//Initialization of Registers
+		for(int i=1; i<33; i++){
+			registers.put("r"+Integer.toString(i), 0);
+		}
+
 
 		int linecount=0;
 		String currentLine;
@@ -57,7 +36,7 @@ public class PC{
 
 				for(int i=0; i<temp.length; i++){
 					if(!temp[i].equals(" ") && !temp[i].equals(",")){
-						acc += temp[i];	
+						acc += temp[i];
 					}else if(!acc.equals("")){
 						arr.add(acc);
 						acc = "";
@@ -66,20 +45,23 @@ public class PC{
 				if(!acc.equals("")) arr.add(acc);
 				if(arr.size()==3){
 					Instruction instr = new Instruction(arr.get(0),arr.get(1), arr.get(2));
-					if(verifier.checkValidity(instr)) 
+					if(verifier.checkValidity(instr))
 					{
 						instructions.add(instr);
 						instr.fetch(registers);
+						instr.execute(registers, flags);
 					}
 					else{
 						System.out.print(arr.toString());
 						System.out.println(" is an invalid instruction set!");
 					}
 				}else{
-					System.out.println("Error");
+					System.out.print(arr.toString());
+					System.out.println(" is an invalid instruction set!");
 				}
 			}
 
+			System.out.println("\n\nCode:");
 			for(Instruction i : instructions){
 				i.printShit();
 			}
