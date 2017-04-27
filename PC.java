@@ -31,7 +31,7 @@ public class PC{
 				currentLine = currentLine.toLowerCase();
 				if(currentLine.equals("")) continue;
 				String[] temp = currentLine.split("");
-				String acc = "";
+				String acc = "hello";
 				ArrayList<String> arr = new ArrayList<String>();
 
 				for(int i=0; i<temp.length; i++){
