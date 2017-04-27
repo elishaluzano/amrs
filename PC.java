@@ -5,7 +5,7 @@ public class PC{
 
 	public static void main(String []args){
 
-		HashMap<String,Integer> registers = new HashMap<String,Integer>();
+		ArrayList<Register> registers = new ArrayList<Register>();
 		HashMap<String,Integer> flags = new HashMap<String,Integer>();
 
 		//Initialization of flags
@@ -14,7 +14,7 @@ public class PC{
 
 		//Initialization of Registers
 		for(int i=1; i<33; i++){
-			registers.put("r"+Integer.toString(i), 0);
+			registers.add(new Register("r"+toString(i),0));
 		}
 
 
@@ -63,7 +63,7 @@ public class PC{
 
 			System.out.println("\n\n-----Code-----");
 			for(Instruction i : instructions){
-				i.printShit();
+				i.printInstr();
 			}
 
 		}catch(Exception e){

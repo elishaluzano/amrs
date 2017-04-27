@@ -7,6 +7,7 @@ public class Instruction{
 	private String op2;
 	private Integer val1;
 	private Integer val2;
+	private String state;
 
 	public Instruction(String operation, String op1, String op2){
 		this.operation = operation;
@@ -16,7 +17,7 @@ public class Instruction{
 		this.val2 = 0;
 	}
 
-	public void printShit(){
+	public void printInstr(){
 		System.out.println("operation: " + this.operation + "\n" + "op1: " + this.op1 + "\n" + "op2: " + this.op2 + "\n");
 	}
 
