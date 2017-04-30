@@ -14,9 +14,8 @@ public class PC{
 
 		//Initialization of Registers
 		for(int i=1; i<33; i++){
-			registers.add(new Register("r"+toString(i),0));
+			registers.add(new Register("r"+i,0));
 		}
-
 
 		int linecount=0;
 		String currentLine;
@@ -31,7 +30,7 @@ public class PC{
 				currentLine = currentLine.toLowerCase();
 				if(currentLine.equals("")) continue;
 				String[] temp = currentLine.split("");
-				String acc = "hello";
+				String acc = "";
 				ArrayList<String> arr = new ArrayList<String>();
 
 				for(int i=0; i<temp.length; i++){

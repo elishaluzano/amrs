@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.*;
 
 public class Register{
-      String registerName;
-      Integer registerValue;
+      private String registerName;
+      private Integer registerValue;
       boolean busy; 
 
       public Register(String name, Integer value)
@@ -11,6 +11,10 @@ public class Register{
             this.registerName = name;
             this.registerValue = value;
             this.busy = false;
+      }
+
+      public String getRegName(){
+            return this.registerName;
       }
 
       public Integer getRegValue(){

@@ -41,59 +41,125 @@ public class Instruction{
 		return this.val2;
 	}
 
-	public void load(HashMap<String,Integer> registers, HashMap<String,Integer> flags) {
+	public void load(ArrayList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
-		{
-			this.val2 = registers.get(this.op2);
-			this.val1 = this.val2;
-			registers.put(this.op1, this.val1);
+		{	
+			for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(this.op2))
+				{
+					this.val2 = reg.getRegValue();
+				}
+			}
 		}
-		else
-		{
 			this.val1 = this.val2;
-			registers.put(this.op1, this.val1);
-		}
+			for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(this.op1))
+				{
+					reg.setRegValue(this.val1);
+				}
+			}
+		
 		this.printStatus(flags);
 	}
 
-	public void add(HashMap<String,Integer> registers, HashMap<String,Integer> flags) {
+	public void add(ArrayList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
-		{
-			this.val1 = this.val1 + registers.get(this.op2);
-			registers.put(this.op1, this.val1);
+		{	
+			int regValue=0;
+			for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(this.op2))
+				{
+					regValue = reg.getRegValue();
+				}
+			}
+			this.val1 = this.val1 + regValue;
 		}
 		else
 		{
 			this.val1 = this.val1 + this.val2;
-			registers.put(this.op1, this.val1);
 		}
+		for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(this.op1))
+				{
+					reg.setRegValue(this.val1);
+				}
+			}
 		this.printStatus(flags);
 	}
 
-	public void sub(HashMap<String,Integer> registers, HashMap<String,Integer> flags) {
+	public void sub(ArrayList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
 		{
-			this.val1 = this.val1 - registers.get(this.op2);
-			registers.put(this.op1, this.val1);
+			int regValue=0;
+			for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(this.op2))
+				{
+					regValue = reg.getRegValue();
+				}
+			}
+			this.val1 = this.val1 - regValue;
 		}
 		else
 		{
 			this.val1 = this.val1 - this.val2;
-			registers.put(this.op1, this.val1);
+		}
+		for(int i=0;i<registers.size();i++)
+		{
+			Register reg = registers.get(i);
+			if(reg.getRegName().equals(this.op1))
+			{
+				reg.setRegValue(this.val1);
+			}
 		}
 		this.printStatus(flags);
 	}
 
-	public void cmp(HashMap<String,Integer> registers, HashMap<String,Integer> flags) {
+	public void cmp(ArrayList<Register> registers, HashMap<String,Integer> flags) {
 		/*Compares the values of two registers by subtracting the value of the second register from the value of the
 		first register. If the resultis zero (0),the ZF is setto 1, 0 otherwise (default). Ifthe resultis negative,the NF is set
 		to 1, 0 otherwise (default). No change (default value) for NF and ZF for a positive difference.*/
 		int diff = 0;
 		if (isRegister(this.op1) && isRegister(this.op2))								// both are registers
-			diff = registers.get(this.op1) - registers.get(this.op2);
+		{
+			int regValue1=0, regValue2=0;
+			for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(this.op1))
+				{
+					regValue1 = reg.getRegValue();
+				}
+				else if(reg.getRegName().equals(this.op2))
+				{
+					regValue2 = reg.getRegValue();
+				}
+			}
+			diff = regValue1 - regValue2;
+		}
 		else if (isRegister(this.op1) && !isRegister(this.op2))					// 2nd operand is not a register
-			diff = registers.get(this.op1) - this.val2;
-			// sets the ZF and NF based on the difference
+		{
+			int regValue1=0;
+			for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(this.op1))
+				{
+					regValue1 = reg.getRegValue();
+				}
+			}
+			diff = regValue1 - this.val2;
+		}
+		// sets the ZF and NF based on the difference
 		if (diff == 0) flags.put("ZF", 1);
 		else if (diff < 0) flags.put("NF", 1);
 		// System.out.println("diff is: " + diff);
@@ -101,20 +167,27 @@ public class Instruction{
 		this.printStatus(flags);
 	}
 
-	public void fetch(HashMap<String,Integer> registers)
+	public void fetch(ArrayList<Register> registers)
 	{
-		if (isRegister(this.op1))
+		for(int i=0;i<registers.size();i++)
 		{
-			this.val1 = registers.get(this.op1);
-		}
-		else
-		{
-			this.val1 = Integer.parseInt(this.op1);
+			Register reg = registers.get(i);
+			if(reg.getRegName().equals(this.op1))
+			{
+				this.val1 = reg.getRegValue();
+			}
 		}
 
 		if (isRegister(this.op2))
 		{
-			this.val2 = registers.get(this.op2);
+			for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(this.op2))
+				{
+					this.val2 = reg.getRegValue();
+				}
+			}
 		}
 		else
 		{
@@ -122,7 +195,7 @@ public class Instruction{
 		}
 	}
 
-	public void execute(HashMap<String, Integer> registers, HashMap<String, Integer> flags){
+	public void execute(ArrayList<Register> registers, HashMap<String, Integer> flags){
 		if(this.operation.equals("add")){
 			this.add(registers, flags);
 		}
