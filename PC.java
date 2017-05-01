@@ -5,7 +5,7 @@ public class PC{
 
 	public static void main(String []args){
 
-		LinkedList<Register> registers = new ArrayList<Register>();
+		LinkedList<Register> registers = new LinkedList<Register>();
 		HashMap<String,Integer> flags = new HashMap<String,Integer>();
 		MonitorInstruction mi = new MonitorInstruction();
 
@@ -21,7 +21,7 @@ public class PC{
 		int linecount=0;
 		String currentLine;
 		Verifier verifier = new Verifier();
-		ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+		LinkedList<Instruction> instructions = new LinkedList<Instruction>();
 
 		try{
 			BufferedReader br = new BufferedReader(new FileReader("input.txt"));
@@ -68,13 +68,17 @@ public class PC{
 
 		}
 
-		mi.getCC().set(instructions);
-		while(mi.getCC().getLast().getLast().state != "decode") {
+		mi.getCC().add(instructions);
+		while(mi.getCC().getLast().getLast().getState() != "decode") {
+			int executingIndex();
+
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
-				mi.getCC().get(i).fetch(mi.getCC().getLast().get(i));
-				mi.getCC().get(i).decode(mi.getCC().getLast().get(i));
-				mi.getCC().get(i).execute(mi.getCC().getLast().get(i));
-				mi.printStatus(flags, getCC().getLast().get(i));
+				mi.getCC().getLast().get(i)
+				// mi.getCC().get(i).fetch(mi.getCC().getLast().get(i));
+				// mi.getCC().getLast().fetch(mi.getCC().getLast().get(i));
+				// mi.getCC().get(i).decode(mi.getCC().getLast().get(i));
+				// mi.getCC().get(i).execute(mi.getCC().getLast().get(i));
+				// mi.printStatus(flags, getCC().getLast().get(i));
 			}
 			mi.getCC().set(instructions);
 		}
