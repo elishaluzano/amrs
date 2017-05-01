@@ -75,14 +75,24 @@ public class PC{
 			sec ++;
 			System.out.println("SECONDS: " + sec);
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
+				for(int x=0; x<registers.size(); x++){
+					if(registers.get(x).isBusy() == true && registers.get(x).getRegName().equals(mi.getCC().getLast().get(i).getOperand1())){
+						mi.getCC().getLast().get(i).setState("stall");
+						continue;
+					}
+					else if(registers.get(x).isBusy() == true && registers.get(x).getRegName().equals(mi.getCC().getLast().get(i).getOperand2())){
+						mi.getCC().getLast().get(i).setState("stall");
+						continue;
+					}
+				}
 				if(mi.getCC().getLast().get(i).getState() == "waiting" && flag == false){
 					mi.fetch(mi.getCC().getLast().get(i));
 					flag = true;
 				}
-				else if(mi.getCC().getLast().get(i).getState() == "fetch"){
+				else if(mi.getCC().getLast().get(i).getState() == "fetch" || mi.getCC().getLast().get(i).getState() == "stall"){
 					mi.decode(registers, mi.getCC().getLast().get(i));
 				}
-				else if(mi.getCC().getLast().get(i).getState() == "decode"){
+				else if(mi.getCC().getLast().get(i).getState() == "decode" || mi.getCC().getLast().get(i).getState() == "stall"){
 					mi.execute(registers, flags, mi.getCC().getLast().get(i));
 				}
 			}
