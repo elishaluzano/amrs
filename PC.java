@@ -5,8 +5,9 @@ public class PC{
 
 	public static void main(String []args){
 
-		ArrayList<Register> registers = new ArrayList<Register>();
+		LinkedList<Register> registers = new ArrayList<Register>();
 		HashMap<String,Integer> flags = new HashMap<String,Integer>();
+		MonitorInstruction mi = new MonitorInstruction();
 
 		//Initialization of flags
 		flags.put("ZF", 0);
@@ -26,12 +27,12 @@ public class PC{
 			BufferedReader br = new BufferedReader(new FileReader("input.txt"));
 			while((currentLine = br.readLine())!=null){
 				linecount++;
+				ArrayList<String> arr = new ArrayList<String>();
 				currentLine = currentLine.replaceAll("\\s"," ");
 				currentLine = currentLine.toLowerCase();
 				if(currentLine.equals("")) continue;
 				String[] temp = currentLine.split("");
 				String acc = "";
-				ArrayList<String> arr = new ArrayList<String>();
 
 				for(int i=0; i<temp.length; i++){
 					if(!temp[i].equals(" ") && !temp[i].equals(",")){
@@ -47,8 +48,6 @@ public class PC{
 					if(verifier.checkValidity(instr))
 					{
 						instructions.add(instr);
-						instr.fetch(registers);
-						instr.execute(registers, flags);
 					}
 					else{
 						System.out.print(arr.toString());
@@ -67,6 +66,17 @@ public class PC{
 
 		}catch(Exception e){
 
+		}
+
+		mi.getCC().set(instructions);
+		while(mi.getCC().getLast().getLast().state != "decode") {
+			for(int i=0; i<mi.getCC().getLast().size(); i++){
+				mi.getCC().get(i).fetch(mi.getCC().getLast().get(i));
+				mi.getCC().get(i).decode(mi.getCC().getLast().get(i));
+				mi.getCC().get(i).execute(mi.getCC().getLast().get(i));
+				mi.printStatus(flags, getCC().getLast().get(i));
+			}
+			mi.getCC().set(instructions);
 		}
 	}
 }

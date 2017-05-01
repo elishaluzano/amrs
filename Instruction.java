@@ -41,7 +41,15 @@ public class Instruction{
 		return this.val2;
 	}
 
-	public void load(ArrayList<Register> registers, HashMap<String,Integer> flags) {
+	public void setValue1(Integer val1){
+		this.val1 = val1;
+	}
+
+	public void setValue2(Integer val2){
+		this.val2 = val2;
+	}
+
+	public void load(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
 		{	
 			for(int i=0;i<registers.size();i++)
@@ -63,10 +71,10 @@ public class Instruction{
 				}
 			}
 		
-		this.printStatus(flags);
+		// this.printStatus(flags);
 	}
 
-	public void add(ArrayList<Register> registers, HashMap<String,Integer> flags) {
+	public void add(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
 		{	
 			int regValue=0;
@@ -92,10 +100,10 @@ public class Instruction{
 					reg.setRegValue(this.val1);
 				}
 			}
-		this.printStatus(flags);
+		// this.printStatus(flags);
 	}
 
-	public void sub(ArrayList<Register> registers, HashMap<String,Integer> flags) {
+	public void sub(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
 		{
 			int regValue=0;
@@ -121,10 +129,10 @@ public class Instruction{
 				reg.setRegValue(this.val1);
 			}
 		}
-		this.printStatus(flags);
+		// this.printStatus(flags);
 	}
 
-	public void cmp(ArrayList<Register> registers, HashMap<String,Integer> flags) {
+	public void cmp(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		/*Compares the values of two registers by subtracting the value of the second register from the value of the
 		first register. If the resultis zero (0),the ZF is setto 1, 0 otherwise (default). Ifthe resultis negative,the NF is set
 		to 1, 0 otherwise (default). No change (default value) for NF and ZF for a positive difference.*/
@@ -164,58 +172,11 @@ public class Instruction{
 		else if (diff < 0) flags.put("NF", 1);
 		// System.out.println("diff is: " + diff);
 		System.out.println();
-		this.printStatus(flags);
+		// this.printStatus(flags);
 	}
 
-	public void fetch(ArrayList<Register> registers)
-	{
-		for(int i=0;i<registers.size();i++)
-		{
-			Register reg = registers.get(i);
-			if(reg.getRegName().equals(this.op1))
-			{
-				this.val1 = reg.getRegValue();
-			}
-		}
-
-		if (isRegister(this.op2))
-		{
-			for(int i=0;i<registers.size();i++)
-			{
-				Register reg = registers.get(i);
-				if(reg.getRegName().equals(this.op2))
-				{
-					this.val2 = reg.getRegValue();
-				}
-			}
-		}
-		else
-		{
-			this.val2 = Integer.parseInt(this.op2);
-		}
-	}
-
-	public void execute(ArrayList<Register> registers, HashMap<String, Integer> flags){
-		if(this.operation.equals("add")){
-			this.add(registers, flags);
-		}
-		else if(this.operation.equals("sub")) {
-			this.sub(registers, flags);
-		}
-		else if(this.operation.equals("load")){
-			this.load(registers, flags);
-		}
-		else if(this.operation.equals("cmp")){
-			this.cmp(registers, flags);
-		}
-	}
-
-	private void printStatus(HashMap<String, Integer> flags) {
-		//System.out.println(this.op1+" "+this.op2);
-		System.out.println("\n" + this.operation + " " + this.op1 + " " + this.op2);
-		System.out.println(this.op1 + ": " + this.val1 + "\n" + this.op2 + ": " + this.val2);
-		System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF"));
-
+	public void setState(String state){
+		this.state = state;
 	}
 
 	private boolean isRegister(String operand)
