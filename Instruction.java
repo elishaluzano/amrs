@@ -57,6 +57,18 @@ public class Instruction{
 		this.val2 = val2;
 	}
 
+	public Boolean hasDependencies(LinkedList<Register> registers, Instruction instr){
+		for(int i=0; i<registers.size(); i++){
+			if(instr.op1.equals(registers.get(i).getRegName()) && registers.get(i).busy == true){
+				return true;
+			}
+			if(instr.op2.equals(registers.get(i).getRegName()) && registers.get(i).busy == true){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void load(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
 		{

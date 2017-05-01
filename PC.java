@@ -73,25 +73,37 @@ public class PC{
 		mi.setCC(instructions);
 		while(mi.getCC().getLast().getLast().getState() != "writeback") {
 			sec ++;
-			System.out.println("SECONDS: " + sec);
+			System.out.println("\n---------------SECONDS: " + sec);
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
-				if(mi.getCC().getLast().get(i).getState() == "waiting" && flag == false){
+				// for(int x=0; x<registers.size(); x++){
+				// 	if(registers.get(x).isBusy() == true && registers.get(x).getRegName().equals(mi.getCC().getLast().get(i).getOperand1())){
+				// 		mi.getCC().getLast().get(i).setState("stall");
+				// 		continue;
+				// 	}
+				// 	else if(registers.get(x).isBusy() == true && registers.get(x).getRegName().equals(mi.getCC().getLast().get(i).getOperand2())){
+				// 		mi.getCC().getLast().get(i).setState("stall");
+				// 		continue;
+				// 	}
+				// }
+				Instruction instr = mi.getCC().getLast().get(i);
+				if(instr.getState() == "waiting" && flag == false){
 					mi.fetch(mi.getCC().getLast().get(i));
 					flag = true;
 				}
-				else if(mi.getCC().getLast().get(i).getState() == "fetch"){
+				else if(instr.getState() == "fetch" || mi.getCC().getLast().get(i).getState() == "stall"){
+					Instruction previnstr = mi.getCC().getLast().get(i);
+					if(i!=0 && instr.getOperand1().equals()
 					mi.decode(registers, mi.getCC().getLast().get(i));
 				}
-
-				else if(mi.getCC().getLast().get(i).getState() == "decode"){
+				else if(mi.getCC().getLast().get(i).getState() == "decode" || mi.getCC().getLast().get(i).getState() == "stall"){
 					mi.execute(registers, flags, mi.getCC().getLast().get(i));
 				}
 
-				else if(mi.getCC().getLast().get(i).getState() == "execute"){
+				else if(mi.getCC().getLast().get(i).getState() == "execute" || mi.getCC().getLast().get(i).getState() == "stall"){
 					mi.writeBack(registers, flags, mi.getCC().getLast().get(i));
 				}
 
-				else if(mi.getCC().getLast().get(i).getState() == "writeback"){
+				else if(mi.getCC().getLast().get(i).getState() == "writeback" || mi.getCC().getLast().get(i).getState() == "stall"){
 					mi.printStatus(flags, mi.getCC().getLast().get(i));
 				}
 			}

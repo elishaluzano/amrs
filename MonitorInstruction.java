@@ -33,6 +33,7 @@ public class MonitorInstruction{
 			if(reg.getRegName().equals(instr.getOperand1()))
 			{
 				// instr.val1 = reg.getRegValue();
+				registers.get(i).setBusy(true);
 				instr.setValue1(reg.getRegValue());
 			}
 		}
@@ -52,7 +53,8 @@ public class MonitorInstruction{
 		else
 		{
 			// instr.val2 = Integer.parseInt(instr.getOperand2());
-			instr.setValue1(Integer.parseInt(instr.getOperand2()));
+
+			instr.setValue2(Integer.parseInt(instr.getOperand2()));
 		}
 	}
 
@@ -69,6 +71,14 @@ public class MonitorInstruction{
 		}
 		else if(instr.getOperation().equals("cmp")){
 			instr.cmp(registers, flags);
+		}
+
+		for(int i=0;i<registers.size();i++)
+		{
+			if(registers.get(i).getRegName().equals(instr.getOperand1()))
+			{
+				registers.get(i).setBusy(false);
+			}
 		}
 	}
 
