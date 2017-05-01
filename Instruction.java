@@ -15,7 +15,7 @@ public class Instruction{
 		this.op2 = op2;
 		this.val1 = 0;
 		this.val2 = 0;
-		this.state = "";
+		this.state = "waiting";
 	}
 
 	public void printInstr(){
@@ -42,7 +42,11 @@ public class Instruction{
 		return this.val2;
 	}
 
+<<<<<<< HEAD
 	public String getState(){
+=======
+	public String getState() {
+>>>>>>> e732bfdae6fbe3a5ed7d129633bfa82d9a61d0bf
 		return this.state;
 	}
 
@@ -56,7 +60,7 @@ public class Instruction{
 
 	public void load(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
-		{	
+		{
 			for(int i=0;i<registers.size();i++)
 			{
 				Register reg = registers.get(i);
@@ -75,13 +79,13 @@ public class Instruction{
 					reg.setRegValue(this.val1);
 				}
 			}
-		
+
 		// this.printStatus(flags);
 	}
 
 	public void add(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
-		{	
+		{
 			int regValue=0;
 			for(int i=0;i<registers.size();i++)
 			{

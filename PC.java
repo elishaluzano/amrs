@@ -75,7 +75,7 @@ public class PC{
 			sec ++;
 			System.out.println("SECONDS: " + sec);
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
-				if(mi.getCC().getLast().get(i).getState() == "" && flag == false){
+				if(mi.getCC().getLast().get(i).getState() == "waiting" && flag == false){
 					mi.fetch(mi.getCC().getLast().get(i));
 					flag = true;
 				}
