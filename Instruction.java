@@ -7,7 +7,9 @@ public class Instruction{
 	private String op2;
 	private Integer val1;
 	private Integer val2;
+	private Integer temp;
 	private String state;
+
 
 	public Instruction(String operation, String op1, String op2){
 		this.operation = operation;
@@ -15,6 +17,7 @@ public class Instruction{
 		this.op2 = op2;
 		this.val1 = 0;
 		this.val2 = 0;
+		this.temp = 0;
 		this.state = "waiting";
 	}
 
@@ -42,11 +45,7 @@ public class Instruction{
 		return this.val2;
 	}
 
-<<<<<<< HEAD
-	public String getState(){
-=======
 	public String getState() {
->>>>>>> e732bfdae6fbe3a5ed7d129633bfa82d9a61d0bf
 		return this.state;
 	}
 
@@ -69,19 +68,22 @@ public class Instruction{
 					this.val2 = reg.getRegValue();
 				}
 			}
+		}else{
+			this.val2 = Integer.parseInt(op2);
 		}
 			this.val1 = this.val2;
-			for(int i=0;i<registers.size();i++)
-			{
-				Register reg = registers.get(i);
-				if(reg.getRegName().equals(this.op1))
-				{
-					reg.setRegValue(this.val1);
-				}
-			}
+			// for(int i=0;i<registers.size();i++)
+			// {
+			// 	Register reg = registers.get(i);
+			// 	if(reg.getRegName().equals(this.op1))
+			// 	{
+			// 		reg.setRegValue(this.val1);
+			// 	}
+			// }
 
 		// this.printStatus(flags);
 	}
+
 
 	public void add(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
@@ -145,7 +147,7 @@ public class Instruction{
 		/*Compares the values of two registers by subtracting the value of the second register from the value of the
 		first register. If the resultis zero (0),the ZF is setto 1, 0 otherwise (default). Ifthe resultis negative,the NF is set
 		to 1, 0 otherwise (default). No change (default value) for NF and ZF for a positive difference.*/
-		int diff = 0;
+
 		if (isRegister(this.op1) && isRegister(this.op2))								// both are registers
 		{
 			int regValue1=0, regValue2=0;
@@ -161,7 +163,7 @@ public class Instruction{
 					regValue2 = reg.getRegValue();
 				}
 			}
-			diff = regValue1 - regValue2;
+			this.temp = regValue1 - regValue2;
 		}
 		else if (isRegister(this.op1) && !isRegister(this.op2))					// 2nd operand is not a register
 		{
@@ -174,14 +176,18 @@ public class Instruction{
 					regValue1 = reg.getRegValue();
 				}
 			}
-			diff = regValue1 - this.val2;
+			this.temp = regValue1 - this.val2;
 		}
 		// sets the ZF and NF based on the difference
-		if (diff == 0) flags.put("ZF", 1);
-		else if (diff < 0) flags.put("NF", 1);
+		// if (diff == 0) flags.put("ZF", 1);
+		// else if (diff < 0) flags.put("NF", 1);
 		// System.out.println("diff is: " + diff);
 		System.out.println();
 		// this.printStatus(flags);
+	}
+
+	public Integer getTemp(){
+		return this.temp;
 	}
 
 	public void setState(String state){

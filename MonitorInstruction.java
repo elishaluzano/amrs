@@ -52,7 +52,7 @@ public class MonitorInstruction{
 		else
 		{
 			// instr.val2 = Integer.parseInt(instr.getOperand2());
-			instr.setValue1(Integer.parseInt(instr.getOperand2()));	
+			instr.setValue1(Integer.parseInt(instr.getOperand2()));
 		}
 	}
 
@@ -69,6 +69,23 @@ public class MonitorInstruction{
 		}
 		else if(instr.getOperation().equals("cmp")){
 			instr.cmp(registers, flags);
+		}
+	}
+
+	public void writeBack(LinkedList<Register> registers, HashMap<String, Integer> flags, Instruction instr){
+		instr.setState("writeback");
+		if(instr.getOperation() != "cmp"){
+			for(int i=0;i<registers.size();i++)
+			{
+				Register reg = registers.get(i);
+				if(reg.getRegName().equals(instr.getOperand1()))
+				{
+					reg.setRegValue(instr.getValue1());
+				}
+			}
+		}else{
+			if (instr.getTemp() == 0) flags.put("ZF", 1);
+			else if (instr.getTemp() < 0) flags.put("NF", 1);
 		}
 	}
 
