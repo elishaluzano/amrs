@@ -5,7 +5,7 @@ public class PC{
 
 	public static void main(String []args){
 
-		LinkedList<Register> registers = new ArrayList<Register>();
+		LinkedList<Register> registers = new LinkedList<Register>();
 		HashMap<String,Integer> flags = new HashMap<String,Integer>();
 		MonitorInstruction mi = new MonitorInstruction();
 
@@ -21,7 +21,7 @@ public class PC{
 		int linecount=0;
 		String currentLine;
 		Verifier verifier = new Verifier();
-		ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+		LinkedList<Instruction> instructions = new LinkedList<Instruction>();
 
 		try{
 			BufferedReader br = new BufferedReader(new FileReader("input.txt"));
@@ -59,24 +59,39 @@ public class PC{
 				}
 			}
 
-			System.out.println("\n\n-----Code-----");
+			/*System.out.println("\n\n-----Code-----");
 			for(Instruction i : instructions){
 				i.printInstr();
-			}
+			}*/
 
 		}catch(Exception e){
 
 		}
+		Boolean flag = false;
+		int sec = 0;
 
-		mi.getCC().set(instructions);
-		while(mi.getCC().getLast().getLast().state != "decode") {
+		mi.setCC(instructions);
+		while(mi.getCC().getLast().getLast().getState() != "decode") {
+			sec ++;
+			System.out.println("SECONDS: " + sec);
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
-				mi.getCC().get(i).fetch(mi.getCC().getLast().get(i));
-				mi.getCC().get(i).decode(mi.getCC().getLast().get(i));
-				mi.getCC().get(i).execute(mi.getCC().getLast().get(i));
-				mi.printStatus(flags, getCC().getLast().get(i));
+				if(mi.getCC().getLast().get(i).getState() == "" && flag == false){
+					mi.fetch(mi.getCC().getLast().get(i));
+					flag = true;
+				}
+				else if(mi.getCC().getLast().get(i).getState() == "fetch"){
+					mi.decode(registers, mi.getCC().getLast().get(i));
+				}
+
+				else if(mi.getCC().getLast().get(i).getState() == "decode"){
+					mi.execute(registers, flags, mi.getCC().getLast().get(i));
+				}
 			}
-			mi.getCC().set(instructions);
+			for(int i=0; i<mi.getCC().getLast().size(); i++){
+				mi.printStatus(flags, mi.getCC().getLast().get(i));
+			}
+			flag = false;
+			mi.setCC(mi.getCC().getLast());
 		}
 	}
 }

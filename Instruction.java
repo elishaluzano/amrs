@@ -15,6 +15,7 @@ public class Instruction{
 		this.op2 = op2;
 		this.val1 = 0;
 		this.val2 = 0;
+		this.state = "";
 	}
 
 	public void printInstr(){
@@ -39,6 +40,10 @@ public class Instruction{
 
 	public Integer getValue2(){
 		return this.val2;
+	}
+
+	public String getState(){
+		return this.state;
 	}
 
 	public void setValue1(Integer val1){

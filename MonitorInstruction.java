@@ -72,11 +72,12 @@ public class MonitorInstruction{
 		}
 	}
 
-	private void printStatus(HashMap<String, Integer> flags, Instruction instr) {
+	public void printStatus(HashMap<String, Integer> flags, Instruction instr) {
 		//System.out.println(this.getOperand1()+" "+this.op2);
 		System.out.println("\n" + instr.getOperation() + " " + instr.getOperand1() + " " + instr.getOperand2());
 		System.out.println(instr.getOperand1() + ": " + instr.getValue1() + "\n" + instr.getOperand2() + ": " + instr.getValue2());
 		System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF"));
+		System.out.println("Status: " + instr.getState());
 
 	}
 
