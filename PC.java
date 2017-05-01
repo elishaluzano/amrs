@@ -90,21 +90,71 @@ public class PC{
 					mi.fetch(mi.getCC().getLast().get(i));
 					flag = true;
 				}
-				else if(instr.getState() == "fetch" || mi.getCC().getLast().get(i).getState() == "stall"){
-					Instruction previnstr = mi.getCC().getLast().get(i);
-					if(i!=0 && instr.getOperand1().equals()
+				else if(instr.getState() == "fetch"){
+					if(i!=0)
+					{	
+						Instruction previnstr = mi.getCC().getLast().get(i-1);
+						if((instr.getOperand1().equals(previnstr.getOperand1()) || instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "writeback")
+						{
+							System.out.println("Stall instr "+instr.getOperation());
+							continue;
+						}else if(previnstr.getState() == "decode")
+						{
+							System.out.println("Stall instr "+instr.getOperation());
+							continue;
+						}else if(previnstr.getState() == instr.getState())
+						{
+							System.out.println("Stall instr "+instr.getOperation());
+							continue;
+						}					
+					}
 					mi.decode(registers, mi.getCC().getLast().get(i));
 				}
-				else if(mi.getCC().getLast().get(i).getState() == "decode" || mi.getCC().getLast().get(i).getState() == "stall"){
+				else if(instr.getState() == "decode"){
+					if(i!=0)
+					{	
+						Instruction previnstr = mi.getCC().getLast().get(i-1);
+						if((instr.getOperand1().equals(previnstr.getOperand1()) || instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "writeback")
+						{
+							System.out.println("Stall instr "+instr.getOperation());
+							continue;
+						}else if(previnstr.getState() == "execute")
+						{
+							System.out.println("Stall instr "+instr.getOperation());
+							continue;
+						}else if(previnstr.getState() == instr.getState())
+						{
+							System.out.println("Stall instr "+instr.getOperation());
+							continue;
+						}						
+					}
 					mi.execute(registers, flags, mi.getCC().getLast().get(i));
 				}
 
-				else if(mi.getCC().getLast().get(i).getState() == "execute" || mi.getCC().getLast().get(i).getState() == "stall"){
+				else if(instr.getState() == "execute"){
+					if(i!=0)
+					{	
+						Instruction previnstr = mi.getCC().getLast().get(i-1);
+						if((instr.getOperand1().equals(previnstr.getOperand1()) || instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "writeback")
+						{
+							System.out.println("Stall instr "+instr.getOperation());
+							continue;
+						}			
+					}
 					mi.writeBack(registers, flags, mi.getCC().getLast().get(i));
 				}
 
-				else if(mi.getCC().getLast().get(i).getState() == "writeback" || mi.getCC().getLast().get(i).getState() == "stall"){
-					mi.printStatus(flags, mi.getCC().getLast().get(i));
+				else if(instr.getState() == "writeback"){
+					if(i!=0)
+					{	
+						Instruction previnstr = mi.getCC().getLast().get(i-1);
+						if((instr.getOperand1().equals(previnstr.getOperand1()) || instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "writeback")
+						{
+							System.out.println("Stall instr "+instr.getOperation());
+							continue;
+						}						
+					}
+					// mi.printStatus(flags, mi.getCC().getLast().get(i));
 				}
 			}
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
