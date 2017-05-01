@@ -52,7 +52,7 @@ public class MonitorInstruction{
 		else
 		{
 			// instr.val2 = Integer.parseInt(instr.getOperand2());
-			instr.setValue1(Integer.parseInt(instr.getOperand2()));	
+			instr.setValue2(Integer.parseInt(instr.getOperand2()));	
 		}
 	}
 

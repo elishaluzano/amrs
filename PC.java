@@ -71,7 +71,7 @@ public class PC{
 		int sec = 0;
 
 		mi.setCC(instructions);
-		while(mi.getCC().getLast().getLast().getState() != "decode") {
+		while(mi.getCC().getLast().getLast().getState() != "execute") {
 			sec ++;
 			System.out.println("SECONDS: " + sec);
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
@@ -82,7 +82,6 @@ public class PC{
 				else if(mi.getCC().getLast().get(i).getState() == "fetch"){
 					mi.decode(registers, mi.getCC().getLast().get(i));
 				}
-
 				else if(mi.getCC().getLast().get(i).getState() == "decode"){
 					mi.execute(registers, flags, mi.getCC().getLast().get(i));
 				}

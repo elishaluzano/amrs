@@ -42,11 +42,7 @@ public class Instruction{
 		return this.val2;
 	}
 
-<<<<<<< HEAD
-	public String getState(){
-=======
 	public String getState() {
->>>>>>> e732bfdae6fbe3a5ed7d129633bfa82d9a61d0bf
 		return this.state;
 	}
 
@@ -57,6 +53,7 @@ public class Instruction{
 	public void setValue2(Integer val2){
 		this.val2 = val2;
 	}
+
 
 	public void load(LinkedList<Register> registers, HashMap<String,Integer> flags) {
 		if (isRegister(this.op2))
