@@ -9,9 +9,10 @@ public class MonitorInstruction{
 		this.clockCycles = new LinkedList<LinkedList<Instruction>>();
 	}
 
-	public void fetch(Instruction instr)
+	public Integer fetch(Instruction instr, Integer pc)
 	{
 		instr.setState("fetch");
+		return pc+=1;
 	}
 
 	public LinkedList<LinkedList<Instruction>> getCC()
@@ -27,6 +28,7 @@ public class MonitorInstruction{
 	public void decode(LinkedList<Register> registers, Instruction instr)
 	{
 		instr.setState("decode");
+		instr.setStall(false);
 		for(int i=0;i<registers.size();i++)
 		{
 			Register reg = registers.get(i);
@@ -82,9 +84,21 @@ public class MonitorInstruction{
 		}
 	}
 
+	public void memoryAccess(LinkedList<Register> registers, HashMap<String, Integer> flags, Instruction instr){
+		instr.setState("memory access");
+	}
+
 	public void writeBack(LinkedList<Register> registers, HashMap<String, Integer> flags, Instruction instr){
 		instr.setState("writeback");
 		if(instr.getOperation() != "cmp"){
+			if(instr.getValue1()>99){
+				instr.setValue1(99);
+				flags.put("OF", 1);
+			}else if(instr.getValue1()<-99){
+				instr.setValue1(-99);
+				flags.put("OF", 1);
+			}
+
 			for(int i=0;i<registers.size();i++)
 			{
 				Register reg = registers.get(i);
@@ -103,8 +117,9 @@ public class MonitorInstruction{
 		//System.out.println(this.getOperand1()+" "+this.op2);
 		System.out.println("\n" + instr.getOperation() + " " + instr.getOperand1() + " " + instr.getOperand2());
 		System.out.println(instr.getOperand1() + ": " + instr.getValue1() + "\n" + instr.getOperand2() + ": " + instr.getValue2());
-		System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF"));
+		System.out.println("ZF: " + flags.get("ZF") + "\n" + "NF: " + flags.get("NF") + "\n" + "OF: " + flags.get("OF"));
 		System.out.println("Status: " + instr.getState());
+		System.out.println("Stall: " + instr.isStall());
 
 	}
 

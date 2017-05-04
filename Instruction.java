@@ -9,6 +9,7 @@ public class Instruction{
 	private Integer val2;
 	private Integer temp;
 	private String state;
+	private boolean stall;
 
 
 	public Instruction(String operation, String op1, String op2){
@@ -19,6 +20,7 @@ public class Instruction{
 		this.val2 = 0;
 		this.temp = 0;
 		this.state = "waiting";
+		this.stall = false;
 	}
 
 	public void printInstr(){
@@ -55,6 +57,14 @@ public class Instruction{
 
 	public void setValue2(Integer val2){
 		this.val2 = val2;
+	}
+
+	public boolean isStall() {
+		return this.stall;
+	}
+
+	public void setStall(boolean stall){
+		this.stall = stall;
 	}
 
 	public Boolean hasDependencies(LinkedList<Register> registers, Instruction instr){
