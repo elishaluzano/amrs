@@ -9,6 +9,7 @@ public class PC{
 	static LinkedList<Register> registers = new LinkedList<Register>();
 	static LinkedList<Instruction> instructions = new LinkedList<Instruction>();
 	static HashMap<String,Integer> flags = new HashMap<String,Integer>();
+	static LinkedList<Point> hazards = new LinkedList<Point>();
 	static MonitorInstruction mi = new MonitorInstruction();
 	static Verifier verifier = new Verifier();
 	static Gui mainGui = new Gui();
@@ -37,38 +38,6 @@ public class PC{
 		readFile(mainGui.initialFile());
 		startPC();
 
-		System.out.println("--------------------SUMMARY--------------------------");
-
-		LinkedList<Point> hazards = new LinkedList<Point>();
-
-
-		for(int i=0; i<instructions.size(); i++){
-			for(int j=0; j<instructions.size(); j++){
-				if(i != j){
-					Point p1 = new Point(i,j);
-					Point p2 = new Point(j,i);
-					if(hazards.contains(p1) || hazards.contains(p2)){
-						continue;
-					}
-					if(instructions.get(i).getOperand1().equals(instructions.get(j).getOperand1())){
-						System.out.println("WAW: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
-					}
-
-					else if(instructions.get(i).getOperand1().equals(instructions.get(j).getOperand2())){
-						System.out.println("RAW: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
-					}
-
-					else if(instructions.get(i).getOperand2().equals(instructions.get(j).getOperand1())){
-						System.out.println("WAR: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
-					}
-					hazards.add(p1);
-				}
-			}
-		}
-
-		System.out.println("\n\nSTALLS: " + stall);
-		System.out.println("CPI: " + ((float)instructions.size() / (float)sec));
-		System.out.println("TOTAL CC: " + sec);
 	}
 
 	// allows user to choose file input
@@ -258,6 +227,7 @@ public class PC{
 			flag = false;
 			mi.setCC(mi.getCC().getLast());
 		}
+		printSummary();
 	}
 
 	// resets the values in PC (for another input file)
@@ -265,10 +235,14 @@ public class PC{
 
 		instructions.clear();
 		registers.clear();
+		hazards.clear();
 		mi.getCC().clear();
 
 		programCounter = 0;
 		linecount=0;
+		stall=0;
+		sec=0;
+		flag = false;
 
 		//Initialization of flags
 		flags.put("ZF", 0);
@@ -281,5 +255,38 @@ public class PC{
 		for(int i=1; i<33; i++){
 			registers.add(new Register("r"+i,0));
 		}
+	}
+
+	public static void printSummary() {
+		System.out.println("--------------------SUMMARY--------------------------");
+
+		for(int i=0; i<instructions.size(); i++){
+			for(int j=0; j<instructions.size(); j++){
+				if(i != j){
+					Point p1 = new Point(i,j);
+					Point p2 = new Point(j,i);
+					if(hazards.contains(p1) || hazards.contains(p2)){
+						continue;
+					}
+					if(instructions.get(i).getOperand1().equals(instructions.get(j).getOperand1())){
+						System.out.println("WAW: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
+					}
+
+					else if(instructions.get(i).getOperand1().equals(instructions.get(j).getOperand2())){
+						System.out.println("RAW: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
+					}
+
+					else if(instructions.get(i).getOperand2().equals(instructions.get(j).getOperand1())){
+						System.out.println("WAR: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
+					}
+					hazards.add(p1);
+				}
+			}
+		}
+
+		System.out.println("\n\nSTALLS: " + stall);
+		System.out.println("CPI: " + ((float)instructions.size() / (float)sec));
+		System.out.println("TOTAL CC: " + sec);
+
 	}
 }
