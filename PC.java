@@ -14,7 +14,10 @@ public class PC{
 	static Gui mainGui = new Gui();
 	static Integer programCounter = 0;
 	static int linecount=0;
+	static int stall=0;
 	static String currentLine;
+	static Boolean flag = false;
+	static int sec = 0;
 
 	public static void main(String []args){
 
@@ -33,6 +36,39 @@ public class PC{
 		mainGui.showGui();
 		readFile(mainGui.initialFile());
 		startPC();
+
+		System.out.println("--------------------SUMMARY--------------------------");
+
+		LinkedList<Point> hazards = new LinkedList<Point>();
+
+
+		for(int i=0; i<instructions.size(); i++){
+			for(int j=0; j<instructions.size(); j++){
+				if(i != j){
+					Point p1 = new Point(i,j);
+					Point p2 = new Point(j,i);
+					if(hazards.contains(p1) || hazards.contains(p2)){
+						continue;
+					}
+					if(instructions.get(i).getOperand1().equals(instructions.get(j).getOperand1())){
+						System.out.println("WAW: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
+					}
+
+					else if(instructions.get(i).getOperand1().equals(instructions.get(j).getOperand2())){
+						System.out.println("RAW: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
+					}
+
+					else if(instructions.get(i).getOperand2().equals(instructions.get(j).getOperand1())){
+						System.out.println("WAR: " + (i+1) + " & " + (j+1) + " " + instructions.get(i).getOperand1());
+					}
+					hazards.add(p1);
+				}
+			}
+		}
+
+		System.out.println("\n\nSTALLS: " + stall);
+		System.out.println("CPI: " + ((float)instructions.size() / (float)sec));
+		System.out.println("TOTAL CC: " + sec);
 	}
 
 	// allows user to choose file input
@@ -80,18 +116,18 @@ public class PC{
 		}
 
 	public static void startPC() {
-		Boolean flag = false;
-		int sec = 0;
 
 		mi.setCC(instructions);
 		while(mi.getCC().getLast().getLast().getState() != "done")
 		{
+			Boolean stallFlag = false;
 			sec ++;
 			System.out.println("\n---------------SECONDS: " + sec);
 			int misize = mi.getCC().getLast().size();
 			for(int i=0; i<misize; i++)
 			{
 				Instruction instr = mi.getCC().getLast().get(i);
+				if(instr.isStall()) stallFlag = true;
 				if(instr.getState() == "waiting" && flag == false){
 					programCounter = mi.fetch(mi.getCC().getLast().get(i),programCounter);
 					flag = true;
@@ -99,7 +135,7 @@ public class PC{
 				else if(instr.getState() == "fetch"){
 
 					if(i!=0)
-					{	
+					{
 						boolean lflag = false;
 						for(int j=1;j<5;j++)		// checks the prev 5 instr
 						{
@@ -134,7 +170,7 @@ public class PC{
 				}
 				else if(instr.getState() == "decode"){
 					if(i!=0)
-					{	
+					{
 						boolean lflag = false;
 						for(int j=1;j<5;j++)
 						{
@@ -211,6 +247,10 @@ public class PC{
 				}
 			}
 
+			if(stallFlag){
+				stall ++;
+			}
+
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
 				mi.printStatus(flags, mi.getCC().getLast().get(i));
 			}
@@ -242,5 +282,4 @@ public class PC{
 			registers.add(new Register("r"+i,0));
 		}
 	}
-
 }
