@@ -125,15 +125,6 @@ public class Instruction{
 		{
 			this.val1 = this.val1 + this.val2;
 		}
-		for(int i=0;i<registers.size();i++)
-			{
-				Register reg = registers.get(i);
-				if(reg.getRegName().equals(this.op1))
-				{
-					reg.setRegValue(this.val1);
-				}
-			}
-		// this.printStatus(flags);
 	}
 
 	public void sub(LinkedList<Register> registers, HashMap<String,Integer> flags) {
@@ -154,15 +145,6 @@ public class Instruction{
 		{
 			this.val1 = this.val1 - this.val2;
 		}
-		for(int i=0;i<registers.size();i++)
-		{
-			Register reg = registers.get(i);
-			if(reg.getRegName().equals(this.op1))
-			{
-				reg.setRegValue(this.val1);
-			}
-		}
-		// this.printStatus(flags);
 	}
 
 	public void cmp(LinkedList<Register> registers, HashMap<String,Integer> flags) {
