@@ -124,14 +124,14 @@ public class Gui{
 
 		for(int j=0; j<instructions.get(0).size(); j++){
 			if(j==0) data[j][0] = "";
-			data[j+1][0] = instructions.get(0).get(j).getOperation() + " " + instructions.get(0).get(j).getOperand1() + " " + instructions.get(0).get(j).getOperand2();
+			data[j][0] = instructions.get(0).get(j).getOperation() + " " + instructions.get(0).get(j).getOperand1() + " " + instructions.get(0).get(j).getOperand2();
 		}
 
 
 
 		for(int j=0; j<instructions.size(); j++){
 			for(int x=0; x<instructions.get(j).size(); x++){
-				if(instructions.get(j).get(x).isStall()) data[x+1][j+1] = "S";
+				if(instructions.get(j).get(x).isStall()) data[x][j+1] = "S";
 				else if(instructions.get(j).get(x).getState().equals("fetch")) data[x][j+1] = "F";
 				else if(instructions.get(j).get(x).getState().equals("decode")) data[x][j+1] = "D";
 				else if(instructions.get(j).get(x).getState().equals("execute")) data[x][j+1] = "E";
@@ -142,6 +142,8 @@ public class Gui{
 		}
 
 		fdetable = new JTable(data, colheader);
+
+
 
 
 		for(int j=0; j<seconds; j++){
