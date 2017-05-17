@@ -7,6 +7,8 @@ import java.awt.event.*;
 public class PC{
 
 	static LinkedList<Register> registers = new LinkedList<Register>();
+	static LinkedList<LinkedList<Register>> registersPerSecond = new LinkedList<LinkedList<Register>>();
+	static LinkedList<LinkedList<Instruction>> instructionsPerSecond = new LinkedList<LinkedList<Instruction>>();
 	static LinkedList<Instruction> instructions = new LinkedList<Instruction>();
 	static HashMap<String,Integer> flags = new HashMap<String,Integer>();
 	static MonitorInstruction mi = new MonitorInstruction();
@@ -209,7 +211,29 @@ public class PC{
 				else if(instr.getState() == "writeback"){
 					instr.setState("done");
 				}
+				
 			}
+
+			LinkedList<Instruction> iclone = new LinkedList<Instruction>();
+			for(int a = 0; a<instructions.size(); a++){
+				Instruction ins = new Instruction(instructions.get(a).getOperation(), instructions.get(a).getOperand1(), instructions.get(a).getOperand2());
+				ins.setStall(instructions.get(a).isStall());
+				ins.setState(instructions.get(a).getState());
+				iclone.add(ins);
+			}
+
+			instructionsPerSecond.add(iclone);
+
+
+			LinkedList<Register> clone = new LinkedList<Register>();
+			for(int a = 0; a<registers.size(); a++){
+				clone.add(new Register(registers.get(a).getRegName(), registers.get(a).getRegValue()));
+			}
+
+			registersPerSecond.add(clone);
+
+			System.out.println(registersPerSecond.size());
+
 
 			for(int i=0; i<mi.getCC().getLast().size(); i++){
 				mi.printStatus(flags, mi.getCC().getLast().get(i));
@@ -217,7 +241,13 @@ public class PC{
 			System.out.println("\nPC: "+programCounter);
 			flag = false;
 			mi.setCC(mi.getCC().getLast());
+
 		}
+
+		System.out.println(registersPerSecond.get(0).get(0).getRegValue());
+
+		mainGui.getReg(registersPerSecond, instructionsPerSecond);
+
 	}
 
 	// resets the values in PC (for another input file)
