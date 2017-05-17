@@ -10,6 +10,9 @@ public class PC{
 	static LinkedList<Instruction> instructions = new LinkedList<Instruction>();
 	static HashMap<String,Integer> flags = new HashMap<String,Integer>();
 	static LinkedList<Point> hazards = new LinkedList<Point>();
+	static HashMap<Point, String> rawHazard = new HashMap<Point, String>();
+	static HashMap<Point, String> wawHazard = new HashMap<Point, String>();
+	static HashMap<Point, String> warHazard = new HashMap<Point, String>();
 	static MonitorInstruction mi = new MonitorInstruction();
 	static Verifier verifier = new Verifier();
 	static Gui mainGui = new Gui();
@@ -87,45 +90,62 @@ public class PC{
 	public static void startPC() {
 
 		mi.setCC(instructions);
-		while(mi.getCC().getLast().getLast().getState() != "done")
-		{
+		while(mi.getCC().getLast().getLast().getState() != "done"){
 			Boolean stallFlag = false;
 			sec ++;
 			System.out.println("\n---------------SECONDS: " + sec);
 			int misize = mi.getCC().getLast().size();
-			for(int i=0; i<misize; i++)
-			{
+
+			for(int i=0; i<misize; i++){
 				Instruction instr = mi.getCC().getLast().get(i);
 				if(instr.isStall()) stallFlag = true;
 				if(instr.getState() == "waiting" && flag == false){
 					programCounter = mi.fetch(mi.getCC().getLast().get(i),programCounter);
 					flag = true;
-				}
-				else if(instr.getState() == "fetch"){
-
-					if(i!=0)
-					{
+				}else if(instr.getState() == "fetch"){
+					if(i!=0){
 						boolean lflag = false;
-						for(int j=1;j<5;j++)		// checks the prev 5 instr
-						{
+						for(int j=1;j<5;j++){
 							int index = i-j;
-							if(index >= 0)
-							{
+							if(index >= 0){
 								Instruction previnstr = mi.getCC().getLast().get(index);
-								if((instr.getOperand1().equals(previnstr.getOperand1()) || instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "done")
-								{
+								//WAR, WAW and RAW dependency conditions respectively
+								if(((instr.getOperand1().equals(previnstr.getOperand2()) && instr.getOperation()!= "cmp") 
+									|| instr.getOperand1().equals(previnstr.getOperand1())
+									|| instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "done"){
+									Point p1 = new Point(i+1, (i-j)+1);
+									Point p2 = new Point((i-j)+1, i+1);
+
+									//If WAR is encountered, doesn't have to stall but hazard should be noted
+									if((instr.getOperand1().equals(previnstr.getOperand2()) && instr.getOperation()!= "cmp")){
+										if(!warHazard.containsKey(p1) && !warHazard.containsKey(p2)){
+											warHazard.put(p1, instr.getOperand1());
+										}
+									}
+									if(instr.getOperand1().equals(previnstr.getOperand1())
+									|| instr.getOperand2().equals(previnstr.getOperand1())){
+										System.out.println("Stall instr "+instr.getOperation());
+										instr.setStall(true);
+										lflag = true;
+
+										if(instr.getOperand1().equals(previnstr.getOperand1())){
+											if(!wawHazard.containsKey(p1) && !wawHazard.containsKey(p2)){
+												wawHazard.put(p1, instr.getOperand1());
+											}
+										}else if(instr.getOperand2().equals(previnstr.getOperand1())){
+											if(!rawHazard.containsKey(p1) && !rawHazard.containsKey(p2)){
+												rawHazard.put(p1, instr.getOperand2());
+											}
+										}
+									}
+
+									continue;
+								}else if(previnstr.getState() == "decode"){
 									System.out.println("Stall instr "+instr.getOperation());
 									instr.setStall(true);
 									lflag = true;
 									break;
-								}else if(previnstr.getState() == "decode")
-								{
-									System.out.println("Stall instr "+instr.getOperation());
-									instr.setStall(true);
-									lflag = true;
-									break;
-								}else if(previnstr.getState() == instr.getState())
-								{
+								}else if(previnstr.getState() == instr.getState()){
 									System.out.println("Stall instr "+instr.getOperation());
 									instr.setStall(true);
 									lflag = true;
@@ -136,31 +156,49 @@ public class PC{
 						if (lflag) continue;
 					}
 					mi.decode(registers, mi.getCC().getLast().get(i));
-				}
-				else if(instr.getState() == "decode"){
-					if(i!=0)
-					{
+				}else if(instr.getState() == "decode"){
+					if(i!=0){
 						boolean lflag = false;
-						for(int j=1;j<5;j++)
-						{
+						for(int j=1;j<5;j++){
 							int index = i-j;
-							if(index >= 0)
-							{
+							if(index >= 0){
 								Instruction previnstr = mi.getCC().getLast().get(index);
-								if((instr.getOperand1().equals(previnstr.getOperand1()) || instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "done")
-								{
+								if(((instr.getOperand1().equals(previnstr.getOperand2()) && instr.getOperation()!= "cmp") 
+									|| instr.getOperand1().equals(previnstr.getOperand1()) 
+									|| instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "done"){
+									
+									Point p1 = new Point(i+1, (i-j)+1);
+									Point p2 = new Point((i-j)+1, i+1);
+
+									if((instr.getOperand1().equals(previnstr.getOperand2()) && instr.getOperation()!= "cmp")){
+										if(!warHazard.containsKey(p1) && !warHazard.containsKey(p2)){
+											warHazard.put(p1, instr.getOperand1());
+										}
+									}
+									if(instr.getOperand1().equals(previnstr.getOperand1())
+									|| instr.getOperand2().equals(previnstr.getOperand1())){
+										System.out.println("Stall instr "+instr.getOperation());
+										instr.setStall(true);
+										lflag = true;
+
+										if(instr.getOperand1().equals(previnstr.getOperand1())){
+											if(!wawHazard.containsKey(p1) && !wawHazard.containsKey(p2)){
+												wawHazard.put(p1, instr.getOperand1());
+											}
+										}else if(instr.getOperand2().equals(previnstr.getOperand1())){
+											if(!rawHazard.containsKey(p1) && !rawHazard.containsKey(p2)){
+												rawHazard.put(p1, instr.getOperand2());
+											}
+										}
+									}
+
+									continue;
+								}else if(previnstr.getState() == "execute"){
 									System.out.println("Stall instr "+instr.getOperation());
 									instr.setStall(true);
 									lflag = true;
 									break;
-								}else if(previnstr.getState() == "execute")
-								{
-									System.out.println("Stall instr "+instr.getOperation());
-									instr.setStall(true);
-									lflag = true;
-									break;
-								}else if(previnstr.getState() == instr.getState())
-								{
+								}else if(previnstr.getState() == instr.getState()){
 									System.out.println("Stall instr "+instr.getOperation());
 									instr.setStall(true);
 									lflag = true;
@@ -171,47 +209,87 @@ public class PC{
 						if (lflag) continue;
 					}
 					mi.execute(registers, flags, mi.getCC().getLast().get(i));
-				}
-
-				else if(instr.getState() == "execute"){
-					if(i!=0)
-					{
+				}else if(instr.getState() == "execute"){
+					if(i!=0){
 						boolean lflag = false;
-						for(int j=1;j<5;j++)
-						{
+						for(int j=1;j<5;j++){
 							int index = i-j;
-							if(index >= 0)
-							{
+
+							if(index >= 0){
 								Instruction previnstr = mi.getCC().getLast().get(index);
-								if((instr.getOperand1().equals(previnstr.getOperand1()) || instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "done")
-								{
-									System.out.println("Stall instr "+instr.getOperation());
-									instr.setStall(true);
-									lflag = true;
-									break;
+								if(((instr.getOperand1().equals(previnstr.getOperand2()) && instr.getOperation()!= "cmp") 
+									|| instr.getOperand1().equals(previnstr.getOperand1())
+									|| instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "done"){
+									
+									Point p1 = new Point(i+1, (i-j)+1);
+									Point p2 = new Point((i-j)+1, i+1);
+
+									if((instr.getOperand1().equals(previnstr.getOperand2()) && instr.getOperation()!= "cmp")){
+										if(!warHazard.containsKey(p1) && !warHazard.containsKey(p2)){
+											warHazard.put(p1, instr.getOperand1());
+										}
+									}
+									if(instr.getOperand1().equals(previnstr.getOperand1())
+									|| instr.getOperand2().equals(previnstr.getOperand1())){
+										System.out.println("Stall instr "+instr.getOperation());
+										instr.setStall(true);
+										lflag = true;
+
+										if(instr.getOperand1().equals(previnstr.getOperand1())){
+											if(!wawHazard.containsKey(p1) && !wawHazard.containsKey(p2)){
+												wawHazard.put(p1, instr.getOperand1());
+											}
+										}else if(instr.getOperand2().equals(previnstr.getOperand1())){
+											if(!rawHazard.containsKey(p1) && !rawHazard.containsKey(p2)){
+												rawHazard.put(p1, instr.getOperand2());
+											}
+										}
+									}
+
+									continue;
 								}
 							}
 						}
 						if (lflag) continue;
 					}
 					mi.memoryAccess(registers, flags, mi.getCC().getLast().get(i));
-				}
-
-				else if(instr.getState() == "memory access"){
-					if(i!=0)
-					{
+				}else if(instr.getState() == "memory access"){
+					if(i!=0){
 						Instruction previnstr = mi.getCC().getLast().get(i-1);
-						if((instr.getOperand1().equals(previnstr.getOperand1()) || instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "done")
-						{
-							System.out.println("Stall instr "+instr.getOperation());
-							instr.setStall(true);
+						if(((instr.getOperand1().equals(previnstr.getOperand2()) && instr.getOperation()!= "cmp") 
+							|| instr.getOperand1().equals(previnstr.getOperand1()) 
+							|| instr.getOperand2().equals(previnstr.getOperand1())) && previnstr.getState() != "done"){
+							
+							Point p1 = new Point(i+1, i);
+							Point p2 = new Point(i, i+1);
+
+							if((instr.getOperand1().equals(previnstr.getOperand2()) && instr.getOperation()!= "cmp")){
+								if(!warHazard.containsKey(p1) && !warHazard.containsKey(p2)){
+									warHazard.put(p1, instr.getOperand1());
+								}
+							}
+
+							if(instr.getOperand1().equals(previnstr.getOperand1())
+							|| instr.getOperand2().equals(previnstr.getOperand1())){
+								System.out.println("Stall instr "+instr.getOperation());
+								instr.setStall(true);
+
+								if(instr.getOperand1().equals(previnstr.getOperand1())){
+									if(!wawHazard.containsKey(p1) && !wawHazard.containsKey(p2)){
+										wawHazard.put(p1, instr.getOperand1());
+									}
+								}else if(instr.getOperand2().equals(previnstr.getOperand1())){
+									if(!rawHazard.containsKey(p1) && !rawHazard.containsKey(p2)){
+										rawHazard.put(p1, instr.getOperand2());
+									}
+								}
+							}
+
 							continue;
 						}
 					}
 					mi.writeBack(registers, flags, mi.getCC().getLast().get(i));
-				}
-
-				else if(instr.getState() == "writeback"){
+				}else if(instr.getState() == "writeback"){
 					instr.setState("done");
 				}
 			}
@@ -260,6 +338,7 @@ public class PC{
 	public static void printSummary() {
 		System.out.println("--------------------SUMMARY--------------------------");
 
+		System.out.println("\n\nALL DEPENDENCIES: ");
 		for(int i=0; i<instructions.size(); i++){
 			for(int j=0; j<instructions.size(); j++){
 				if(i != j){
@@ -284,9 +363,32 @@ public class PC{
 			}
 		}
 
+		System.out.println("\n\nHAZARDS ENCOUNTERED: \n");
+
+		System.out.println("WAR HAZARDS: ");
+		if(warHazard.size()>0){
+			for(Point p : warHazard.keySet()){
+				System.out.println("\t" + (int)p.getX() + " & " + (int)p.getY() + " " + warHazard.get(p));
+			}
+		}else System.out.println("\tNONE");
+
+		System.out.println("\nWAW HAZARDS: ");
+		if(wawHazard.size()>0){
+			for(Point p : wawHazard.keySet()){
+				System.out.println("\t" + (int)p.getX() + " & " + (int)p.getY() + " " + wawHazard.get(p));
+			}
+		}else System.out.println("\tNONE");
+
+		System.out.println("\nRAW HAZARDS: ");
+		if(rawHazard.size()>0){
+			for(Point p : rawHazard.keySet()){
+				System.out.println("\t" + (int)p.getX() + " & " + (int)p.getY() + " " + rawHazard.get(p));
+			}
+		}else System.out.println("\tNONE");
+
 		System.out.println("\n\nSTALLS: " + stall);
 		System.out.println("CPI: " + ((float)instructions.size() / (float)sec));
-		System.out.println("TOTAL CC: " + sec);
+		System.out.println("TOTAL CC: " + (int)(sec-1));
 
 	}
 }
